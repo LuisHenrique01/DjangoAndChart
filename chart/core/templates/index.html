@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load filtros %}
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card" style="margin: 5px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Gráfico 01</h5>
+                        <canvas id="card-01" style="display: block; width: 100px; height: 50px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="margin: 5px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Gráfico 02</h5>
+                        <canvas id="card-02" style="display: block; width: 100px; height: 50px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card" style="margin: 5px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Gráfico 03</h5>
+                        <canvas style="width: 50px; height: 200px;"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card" style="margin: 5px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Gráfico 04</h5>
+                        <canvas style="width: 50px; height: 200px;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+
+
+{% block grafico %}
+<script>
+    $(document).ready(function(){
+        var ctx1 = document.getElementById('card-01').getContext('2d');
+        var myChart1 = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: [{% for prod in produtos %} '{{prod.nome}}', {%endfor%}],
+                datasets: [{
+                    label: 'Preço dos produtos',
+                    data: [{% for prod in produtos %} {{prod.preco|dot}}, {%endfor%}],
+                    backgroundColor: [
+                        {% for prod in produtos %} 'rgba(255, 99, 132, 0.2)', {%endfor%}
+                    ],
+                    borderColor: [
+                        {% for prod in produtos %} 'rgba(255, 99, 132, 1)', {%endfor%}
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+
+        var ctx2 = document.getElementById('card-02').getContext('2d');
+        var myChart2 = new Chart(ctx2, {
+            type: 'doughnut',
+            data: {
+				datasets: [{
+					data: [
+                        {% for p in pizza %} {{p}}, {%endfor%}
+                    ],
+					backgroundColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+					],
+					label: 'Gráfico 02'
+				}],
+				labels: [{% for prod in produtos %} '{{prod.nome}}', {%endfor%}]
+			},
+			options: {
+				responsive: true
+			}
+        });
+    });
+</script>
+{% endblock grafico %}
