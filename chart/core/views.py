@@ -4,6 +4,7 @@ from .models import Produto
 # Create your views here.
 def index(request):
     base = {}
-    base['produtos'] = Produto.objects.all()
+    base['produtos'] = Produto.objects.all().order_by('preco')
     base['pizza'] = [int(round(j.preco/sum([i.preco for i in base['produtos']]), 2)*100) for j in base['produtos']]
+    base['produtos']
     return render(request, 'index.html', base)
