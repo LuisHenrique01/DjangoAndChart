@@ -47,7 +47,21 @@
                     <div class="card-body">
                         <h5 class="card-title">Mapa exemplo</h5>
                         <div id="map" style="height: 520px; width: 800px; margin: 0 auto; text-align:center; line-height: 520px">
-                            Downloading map...
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Mapa exemplo</h5>
+                        <div id="map2" style="height: 520px; width: 800px; margin: 0 auto; text-align:center; line-height: 520px">
+                            
                         </div>
                     </div>
                 </div>
@@ -216,108 +230,100 @@
 
 {% block map %}
 <script>
-Highcharts.getJSON('https://cdn.jsdelivr.net/gh/highcharts/highcharts@c116b6fa6948448/samples/data/us-counties-unemployment.json',
-    function (data) {
+var data = [
+    {% for t in brasil %}
+        ['{{t|first}}', {{t|last}}],
+    {%endfor%}
+];
 
-        var countiesMap = Highcharts.geojson(
-            Highcharts.maps['countries/us/us-all-all']
-        ),
-        // Extract the line paths from the GeoJSON
-        lines = Highcharts.geojson(
-            Highcharts.maps['countries/us/us-all-all'], 'mapline'
-        ),
-        // Filter out the state borders and separator lines, we want these
-        // in separate series
-        borderLines = Highcharts.grep(lines, function (l) {
-            return l.properties['hc-group'] === '__border_lines__';
-        }),
-        separatorLines = Highcharts.grep(lines, function (l) {
-            return l.properties['hc-group'] === '__separator_lines__';
-        });
+// Create the chart
+Highcharts.mapChart('map', {
+  chart: {
+    map: 'countries/br/br-all'
+  },
 
-        // Add state acronym for tooltip
-        Highcharts.each(countiesMap, function (mapPoint) {
-        mapPoint.name = mapPoint.name + ', ' +
-            mapPoint.properties['hc-key'].substr(3, 2);
-        });
+  title: {
+    text: 'Highmaps basic demo'
+  },
 
-        document.getElementById('map').innerHTML = 'Rendering map...';
+  subtitle: {
+    text: 'Source map: <a href="http://code.highcharts.com/mapdata/countries/br/br-all.js">Brazil</a>'
+  },
 
-        // Create the map
-        setTimeout(function () { // Otherwise innerHTML doesn't update
-        Highcharts.mapChart('map', {
-            chart: {
-            borderWidth: 1,
-            marginRight: 20 // for the legend
-            },
+  mapNavigation: {
+    enabled: true,
+    buttonOptions: {
+      verticalAlign: 'bottom'
+    }
+  },
 
-            title: {
-            text: 'Testando o mapa'
-            },
+  colorAxis: {
+    min: 0,
+    stops: [[0, '#F1EEF6'], [0.65, '#900037'], [1, '#500007']],
+  },
 
-            legend: {
-            layout: 'vertical',
-            align: 'right',
-            floating: true,
-            backgroundColor: ( // theme
-                Highcharts.defaultOptions &&
-                Highcharts.defaultOptions.legend &&
-                Highcharts.defaultOptions.legend.backgroundColor
-            ) || 'rgba(255, 255, 255, 0.85)'
-            },
+  series: [{
+    data: data,
+    name: 'TESTE',
+    states: {
+      hover: {
+        color: '#070008'
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      format: '{point.name}'
+    }
+  }]
+});
 
-            mapNavigation: {
-            enabled: true
-            },
 
-            colorAxis: {
+// Prepare random data
+var data = [
+    ['2200400', 128],
+    ['2201002', 900]
+];
+
+Highcharts.getJSON('https://raw.githubusercontent.com/tbrugz/geodata-br/master/geojson/geojs-22-mun.json', function (geojson) {
+
+    // Initiate the chart
+    Highcharts.mapChart('map2', {
+        chart: {
+            map: geojson
+        },
+
+        title: {
+            text: 'Casos no Piauí'
+        },
+
+        mapNavigation: {
+            enabled: true,
+            buttonOptions: {
+                verticalAlign: 'bottom'
+            }
+        },
+
+        colorAxis: {
             min: 0,
-            max: 25,
-            tickInterval: 5,
             stops: [[0, '#F1EEF6'], [0.65, '#900037'], [1, '#500007']],
-            labels: {
-                format: '{value}%'
-            }
-            },
+        },
 
-            plotOptions: {
-            mapline: {
-                showInLegend: false,
-                enableMouseTracking: false
-            }
-            },
-
-            series: [{
-            mapData: countiesMap,
+        series: [{
             data: data,
-            joinBy: ['hc-key', 'code'],
-            name: 'Unemployment rate',
-            tooltip: {
-                valueSuffix: '%'
-            },
-            borderWidth: 0.5,
+            keys: ['id', 'value'],
+            joinBy: 'id',
+            name: 'Random data',
             states: {
                 hover: {
-                color: '#a4edba'
+                    color: '#a4edba'
                 }
             },
-            shadow: false
-            }, {
-            type: 'mapline',
-            name: 'State borders',
-            data: borderLines,
-            color: 'white',
-            shadow: false
-            }, {
-            type: 'mapline',
-            name: 'Separator',
-            data: separatorLines,
-            color: 'gray',
-            shadow: false
-            }]
-        });
-        }, 0);
-    }
-);
+            dataLabels: {
+                format: '{point.name}'
+            }
+        }]
+    });
+});
+
 </script>    
 {% endblock map %}
