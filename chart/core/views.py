@@ -1,11 +1,9 @@
-from django.shortcuts import render
-from .models import Produto
+from django.shortcuts import render, redirect
+from .models import CasosPorCidadePiaui
 
 # Create your views here.
 def index(request):
     base = {}
-    base['produtos'] = Produto.objects.all().order_by('preco')
-    base['pizza'] = [int(round(j.preco/sum([i.preco for i in base['produtos']]), 2)*100) for j in base['produtos']]
     base['brasil'] = [['br-sp', 0],
                       ['br-ma', 1],
                       ['br-pa', 2],
@@ -33,4 +31,20 @@ def index(request):
                       ['br-df', 24],
                       ['br-ac', 25],
                       ['br-ro', 26]]
+    base['piaui'] = CasosPorCidadePiaui.objects.all()
     return render(request, 'index.html', base)
+
+
+def importar(request):
+    file = request.FILES['arquivo'].read().decode('utf-8')
+    cidades = file.replace("\r","").split("\n")
+    book = []
+    for linha in cidades:
+        try:
+            nome, idibge, casos, mortes = linha.split(',')
+            book.append(CasosPorCidadePiaui(name=nome, idIBGE=idibge, casos=casos, obitos=mortes))
+        except ValueError:
+            pass
+    CasosPorCidadePiaui.objects.bulk_create(book)
+        
+    return redirect('index')

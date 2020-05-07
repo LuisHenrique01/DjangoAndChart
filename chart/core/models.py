@@ -1,20 +1,20 @@
 from django.db import models
 
 # Create your models here.
-class Produto(models.Model):
-    """Model definition for Produto."""
+class CasosPorCidadePiaui(models.Model):
+    """Model definition for CasosPorCidadePiaui."""
 
-    nome = models.CharField(verbose_name='Nome', max_length=80)
-    quantidade = models.IntegerField(verbose_name='Quantidade')
-    preco = models.FloatField(verbose_name='Preço')
-    dt = models.DateField(verbose_name='Data de criação', auto_now_add=True)
-    
+    idIBGE = models.IntegerField(verbose_name='IBGE ID')
+    name = models.CharField(verbose_name='Name', max_length=80)
+    casos = models.IntegerField(verbose_name='Casos')
+    obitos = models.IntegerField(verbose_name='Óbitos')
+
     class Meta:
-        """Meta definition for Produto."""
+        """Meta definition for CasosPorCidadePiaui."""
 
-        verbose_name = 'Produto'
-        verbose_name_plural = 'Produtos'
+        verbose_name = 'CasosPorCidadePiaui'
+        verbose_name_plural = 'CasosPorCidadePiauis'
 
     def __str__(self):
-        """Unicode representation of Produto."""
-        return self.nome
+        """Unicode representation of CasosPorCidadePiaui."""
+        return '{}'.format(self.name)
