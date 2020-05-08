@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import CasosPorCidadePiaui
+import requests as rs
 
 # Create your views here.
 def index(request):
@@ -35,6 +36,10 @@ def index(request):
     return render(request, 'index.html', base)
 
 
+def home(request):
+    return render(request, 'home.html')
+
+
 def importar(request):
     file = request.FILES['arquivo'].read().decode('utf-8')
     cidades = file.replace("\r","").split("\n")
@@ -45,6 +50,8 @@ def importar(request):
             book.append(CasosPorCidadePiaui(name=nome, idIBGE=idibge, casos=casos, obitos=mortes))
         except ValueError:
             pass
-    CasosPorCidadePiaui.objects.bulk_create(book)
-        
+    if len(CasosPorCidadePiaui.objects.all()) == 0:
+        CasosPorCidadePiaui.objects.bulk_create(book)
+    else:
+        CasosPorCidadePiaui.objects.bulk_update(book, fields=['casos', 'obitos'])
     return redirect('index')
